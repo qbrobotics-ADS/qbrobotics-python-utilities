@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qbrobotics-python-utilities"
+version = "0.2.0"
+description = "Python serial utilities for qbrobotics devices"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = ["pyserial>=3.5,<4"]
+
+[project.optional-dependencies]
+dev = ["build>=1,<2"]
+
+[project.urls]
+Repository = "https://github.com/qbrobotics-ADS/qbrobotics-python-utilities"
+
+[project.scripts]
+qbrobotics-test = "qbrobotics_cli:main"
+
+[tool.setuptools]
+py-modules = ["qbrobotics_serial_utils", "qbrobotics_commands", "qbrobotics_cli"]
