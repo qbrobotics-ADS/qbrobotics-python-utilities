@@ -24,6 +24,52 @@ For script-only use, `python -m pip install -r requirements.txt` also works.
 Default connection settings are 2,000,000 baud, 8N1, and 0.5-second read/write timeouts.
 No startup sleep or automatic probing of unrelated serial ports is performed.
 
+## Desktop GUI
+
+Launch directly from the repository:
+
+```bash
+python -m qbrobotics_gui
+```
+
+After installing the package, `qbrobotics-gui` launches the same application.
+Tkinter/ttk is the only GUI toolkit required; it is included in standard Windows
+Python installations. If your Python distributor omits Tk, install its Tkinter
+component. Check availability with `python -m tkinter`.
+Application labels, status messages and validation dialogs are in English. On Windows,
+the window uses the bundled `qbrobotics_assets/qb.ico` icon and a dedicated taskbar
+application identity. The icon is included in both source and wheel distributions.
+
+1. Select or enter the serial port, device ID, host baudrate, timeout and firmware
+   profile. **Connect** opens only that port and verifies a ping before enabling
+   device controls. Changing the session settings requires disconnection.
+2. In **Monitoring**, use **Read values** for encoder readings, currents, motor
+   state and input references. **Start monitoring** repeats reads with a configurable
+   pause after each completed cycle (100..10000 ms). No polling requests accumulate.
+3. In **Manual control**, choose the motor mask and explicitly activate or deactivate.
+   To send references, fill the minimum/maximum limits for both inputs and enter values
+   inside those limits. Limits start empty: wire limits are not physical limits, and
+   units depend on the device's current control mode. The optional ACK checkbox is
+   available only for a supporting firmware profile. Motor-command reads are also
+   gated by the selected profile.
+4. **Firmware information** reads device information using the selected profile.
+   **Diagnostics** displays raw TX/RX packets and errors; **Export log** saves the
+   visible log as UTF-8 text. The display retains the latest 3000 lines.
+
+One worker thread owns serial I/O. Tk widgets are updated only by the main thread;
+the window remains responsive while a device is slow or unavailable. Disconnecting
+or closing cancels pending normal commands and closes the connection after the current
+bounded operation. Deactivation takes priority after the current serial request and
+cancels remaining requests in a monitoring cycle. It is a serial command, not a
+hardware emergency stop. Closing a port does not automatically deactivate motors.
+
+Send-only controls report transmission and mark the displayed state as requiring a
+fresh read. A communication error stops polling, clears stale values, closes the port
+and requires reconnection. No controls activate or send references automatically.
+Bootloader entry and device baudrate changes remain available through the Python API;
+the connection form changes the host connection settings only. Charts and telemetry
+CSV recording are outside this first GUI version.
+
 ## Quick start
 
 ```bash
@@ -205,3 +251,8 @@ deadlines, partial writes, firmware profiles, ACKs, shared-port concurrency and 
 cleanup. CI runs the suite on Windows and Linux with Python 3.9, 3.11 and 3.13.
 Tests never enumerate or command physical devices. Hardware validation on the target
 device/firmware is still required.
+
+GUI worker tests cover connection verification, signed readings, reference limits,
+command cancellation, deactivation priority and port cleanup. Widget integration
+tests use a simulated device and require Tk plus a graphical display; they are
+skipped when either is unavailable (for example, a headless Linux runner).

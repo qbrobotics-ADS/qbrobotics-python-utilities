@@ -19,5 +19,12 @@ Repository = "https://github.com/qbrobotics-ADS/qbrobotics-python-utilities"
 [project.scripts]
 qbrobotics-test = "qbrobotics_cli:main"
 
+[project.gui-scripts]
+qbrobotics-gui = "qbrobotics_gui:main"
+
 [tool.setuptools]
-py-modules = ["qbrobotics_serial_utils", "qbrobotics_commands", "qbrobotics_cli"]
+packages = ["qbrobotics_assets"]
+py-modules = ["qbrobotics_serial_utils", "qbrobotics_commands", "qbrobotics_cli", "qbrobotics_gui_worker", "qbrobotics_gui"]
+
+[tool.setuptools.package-data]
+qbrobotics_assets = ["qb.ico"]
